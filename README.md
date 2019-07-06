@@ -19,7 +19,7 @@ Add the following statement in `Info.plist`
 ```
 
 ## Usage
-See [Example](https://github.com/Samoy/image_saver/tree/master/example)
+See [Example](https://github.com/Samoy/image_save/tree/master/example)
 
 ```
 String path = await mageSaver.saveImage("gif", Uint8List.fromList(data))
