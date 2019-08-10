@@ -1,6 +1,6 @@
 # image_save
 
-Save image to album
+Save image to album, support Android and iOS.
 
 ## Permission
 

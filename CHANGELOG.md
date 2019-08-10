@@ -2,3 +2,9 @@
 
 * Save Image to album use Uint8List
 * Need add permission manually
+
+## 1.0.0
+* Change plugin name
+
+## 1.0.1
+* Fix android plugin name bug
