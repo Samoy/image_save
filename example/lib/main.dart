@@ -30,7 +30,7 @@ class _MyAppState extends State<MyApp> {
           "http://img.youai123.com/1507615921-5474.gif",
           options: Options(responseType: ResponseType.bytes));
       imagePath =
-      await ImageSave.saveImage("gif", Uint8List.fromList(res.data));
+          await ImageSave.saveImage("gif", Uint8List.fromList(res.data));
     } on PlatformException {
       imagePath = '未能保存成功';
     }

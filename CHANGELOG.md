@@ -11,3 +11,5 @@
 
 ## 1.1.0
 * Fit iOS 13
+## 1.1.1
+* Format code
