@@ -1,7 +1,6 @@
 name: image_save
 description: Save image to album, support Android and iOS
-version: 1.0.1
-author: Samoy Young <samoy_young@163.com>
+version: 1.1.0
 homepage: https://github.com/Samoy/image_save
 
 environment:

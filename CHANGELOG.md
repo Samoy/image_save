@@ -8,3 +8,6 @@
 
 ## 1.0.1
 * Fix android plugin name bug
+
+## 1.1.0
+* Fit iOS 13

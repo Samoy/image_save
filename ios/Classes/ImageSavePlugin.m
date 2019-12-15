@@ -29,11 +29,15 @@
         [assetChangeRequest addResourceWithType:PHAssetResourceTypePhoto data:imageData.data options:nil];
         localId = [[assetChangeRequest placeholderForCreatedAsset] localIdentifier];
     } completionHandler:^(BOOL success, NSError *error) {
+        if(error.code == NSValidationErrorMaximum){
+            [self saveImageWithImageType:imageType imageData:imageData result:result];
+            return;
+        }
         if (success) {
             PHFetchResult* assetResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[localId] options:nil];
             PHAsset *asset = [assetResult firstObject];
-            [[PHImageManager defaultManager] requestImageDataForAsset:asset options:nil resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                fileName=((NSURL *)[info objectForKey:@"PHImageFileURLKey"]).absoluteString;
+            [asset requestContentEditingInputWithOptions:nil completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
+                fileName = contentEditingInput.fullSizeImageURL.absoluteString;
                 result(fileName);
             }];
         } else {

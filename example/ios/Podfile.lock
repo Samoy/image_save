@@ -1,0 +1,22 @@
+PODS:
+  - Flutter (1.0.0)
+  - image_save (0.0.1):
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - image_save (from `.symlinks/plugins/image_save/ios`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  image_save:
+    :path: ".symlinks/plugins/image_save/ios"
+
+SPEC CHECKSUMS:
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  image_save: 66ab41fa2c60bc9569e55563ea287cced7b79fd1
+
+PODFILE CHECKSUM: 3dbe063e9c90a5d7c9e4e76e70a821b9e2c1d271
+
+COCOAPODS: 1.8.4
