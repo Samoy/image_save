@@ -22,5 +22,5 @@ Add the following statement in `Info.plist`
 See [Example](https://github.com/Samoy/image_save/tree/master/example)
 
 ```
-String path = await mageSaver.saveImage("gif", Uint8List.fromList(data))
+String path = await ImageSave.saveImage("gif", Uint8List.fromList(res.data))
 ```

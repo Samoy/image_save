@@ -1,5 +1,4 @@
 ## 0.0.1
-
 * Save Image to album use Uint8List
 * Need add permission manually
 
@@ -11,7 +10,13 @@
 
 ## 1.1.0
 * Fit iOS 13
+
 ## 1.1.1
 * Format code
+
 ## 1.1.2
 * Update example
+
+## 1.1.3
+* Fix README.md
+* Add API document.
