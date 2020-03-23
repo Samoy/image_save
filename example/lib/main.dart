@@ -49,6 +49,7 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Column(
             children: <Widget>[
+            	Image.network('http://img.youai123.com/1507615921-5474.gif'),
               RaisedButton(
                 onPressed: _saveImage,
                 child: Text("点击保存"),

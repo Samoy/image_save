@@ -13,3 +13,5 @@
 * Fit iOS 13
 ## 1.1.1
 * Format code
+## 1.1.2
+* Update example
