@@ -23,9 +23,9 @@ class ImageSave {
         "imageExtension": imageExtension,
         "albumName": albumName
       });
-    } on PlatformException catch (e){
-    	print(e);
-		}
+    } on PlatformException {
+      rethrow;
+    }
     return success;
   }
 }
