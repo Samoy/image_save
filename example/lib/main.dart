@@ -31,6 +31,7 @@ class _MyAppState extends State<MyApp> {
       success = await ImageSave.saveImage(Uint8List.fromList(res.data), "gif",
           albumName: "demo");
     } on Exception catch (e, s) {
+      print(e);
       print(s);
     }
     setState(() {
