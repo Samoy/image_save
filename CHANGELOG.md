@@ -26,6 +26,7 @@
 
 ## 2.0.0
 * The parameters have changed.
-* No longer need to manually add keywords.
 * No longer obtain image path you saved.
+For Android, The path is <code>/{album name}/{image name}</code>.
+For iOS, The path can't obtain, the image saved to a new album with name you given.
 * Android: migrate to androidx.
