@@ -20,3 +20,12 @@
 ## 1.1.3
 * Fix README.md
 * Add API document.
+
+## 1.1.3+1
+* Fix bug
+
+## 2.0.0
+* The parameters have changed.
+* No longer need to manually add keywords.
+* No longer obtain image path you saved.
+* Android: migrate to androidx.

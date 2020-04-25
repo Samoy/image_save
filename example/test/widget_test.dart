@@ -16,7 +16,9 @@ void main() {
     Response<List<int>> res = await Dio().get<List<int>>(
         "http://img.youai123.com/1507615921-5474.gif",
         options: Options(responseType: ResponseType.bytes));
-    expect(await ImageSave.saveImage("gif", Uint8List.fromList(res.data)),
-        isNotNull);
+    expect(
+        await ImageSave.saveImage(Uint8List.fromList(res.data), "gif",
+            albumName: "demo"),
+        isTrue);
   });
 }

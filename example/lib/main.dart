@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'package:dio/dio.dart';
-import 'package:flutter/services.dart';
 import 'package:image_save/image_save.dart';
 
 void main() => runApp(MyApp());
@@ -14,7 +13,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String _imagePath = '';
+  String _result = "";
 
   @override
   void initState() {
@@ -23,19 +22,19 @@ class _MyAppState extends State<MyApp> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> _saveImage() async {
+    bool success = false;
+    Response<List<int>> res = await Dio().get<List<int>>(
+        "http://img.youai123.com/1507615921-5474.gif",
+        options: Options(responseType: ResponseType.bytes));
     // Platform messages may fail, so we use a try/catch PlatformException.
-    String imagePath = "";
     try {
-      Response<List<int>> res = await Dio().get<List<int>>(
-          "http://img.youai123.com/1507615921-5474.gif",
-          options: Options(responseType: ResponseType.bytes));
-      imagePath =
-          await ImageSave.saveImage("gif", Uint8List.fromList(res.data));
-    } on PlatformException {
-      imagePath = '未能保存成功';
+      success = await ImageSave.saveImage(Uint8List.fromList(res.data), "gif",
+          albumName: "demo");
+    } on Exception catch (e, s) {
+      print(s);
     }
     setState(() {
-      _imagePath = imagePath;
+      _result = success ? "Success" : "Failed";
     });
   }
 
@@ -49,12 +48,12 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           child: Column(
             children: <Widget>[
-            	Image.network('http://img.youai123.com/1507615921-5474.gif'),
+              Image.network('http://img.youai123.com/1507615921-5474.gif'),
               RaisedButton(
                 onPressed: _saveImage,
-                child: Text("点击保存"),
+                child: Text("Click to save"),
               ),
-              Text("保存到了$_imagePath")
+              Text(_result)
             ],
           ),
         ),
