@@ -28,4 +28,22 @@ class ImageSave {
     }
     return success;
   }
+
+  /// Save Image to Sandbox.
+  /// <b>Notice: Image saved in this way will be deleted when the application is uninstalled.</b>
+  /// For Android, the full path is <code>/storage/emulated/0/Android/data/${application_package_name}/files/Pictures/[imageName]</code>.
+  /// For iOS, the full path is <code>${NSDocumentDirectory}/Pictures/[imageName]</code>, not support dynamic images.
+  /// [imageData] Image data.
+  /// [imageName] Image name,contains extension, such as "demo.png".
+  static Future<bool> saveImageToSandbox(
+      Uint8List imageData, String imageName) async {
+    bool success = false;
+    try {
+      success = await _channel.invokeMethod('saveImageToSandbox',
+          {"imageData": imageData, "imageName": imageName});
+    } on PlatformException {
+      rethrow;
+    }
+    return success;
+  }
 }

@@ -26,10 +26,29 @@
             }];
         } else if(authorizationStatus == PHAuthorizationStatusDenied){
             FlutterError *error = [FlutterError errorWithCode:@"0" message:@"Permission denied" details:nil];
+            result(error);
         }
-    } else {
-        result(FlutterMethodNotImplemented);
+    } else if([@"saveImageToSandbox" isEqualToString:call.method]){
+        FlutterStandardTypedData *data = call.arguments[@"imageData"];
+        NSString *imageName = call.arguments[@"imageName"];
+        [self saveImageToSandBoxWithImageData:data imageName:imageName result:result];
+    }else{
+         result(FlutterMethodNotImplemented);
     }
+}
+
+- (void)saveImageToSandBoxWithImageData:(FlutterStandardTypedData *)imageData imageName:(NSString*)imageName result:(FlutterResult)result{
+    NSString *pictureDir = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:@"Pictures"];
+    NSString *picturePath = [pictureDir stringByAppendingPathComponent:[NSString stringWithFormat:@"%@",imageName]];
+    BOOL isDir;
+    if (![[NSFileManager defaultManager] fileExistsAtPath:picturePath isDirectory:&isDir]) {
+        [[NSFileManager defaultManager] createDirectoryAtPath:pictureDir withIntermediateDirectories:YES attributes:nil error:nil];
+    };
+    
+    UIImage *currentImage  = [UIImage imageWithData:imageData.data];
+    NSData *data = UIImagePNGRepresentation(currentImage);
+    BOOL success = [data writeToFile:picturePath atomically:YES];
+    result(@(success));
 }
 
 -(void)saveImageWithImageExtension:(NSString*) imageExtension imageData:(FlutterStandardTypedData*) imageData albumName:(NSString *)albumName result:(FlutterResult)result{

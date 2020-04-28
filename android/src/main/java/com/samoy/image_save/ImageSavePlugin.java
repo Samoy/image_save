@@ -22,6 +22,8 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.PluginRegistry.Registrar;
 
+import static android.os.Environment.DIRECTORY_PICTURES;
+
 /**
  * ImageSavePlugin
  */
@@ -49,19 +51,29 @@ public class ImageSavePlugin implements MethodCallHandler, PluginRegistry.Reques
 	public void onMethodCall(final MethodCall call, Result result) {
 		this.call = call;
 		this.result = result;
-		if ("saveImage".equals(call.method)) {
-			if (ActivityCompat.checkSelfPermission(registrar.activity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-				methodCall();
-				return;
-			}
+		if (ActivityCompat.checkSelfPermission(registrar.activity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+			methodCall(call, result);
+		} else {
 			ActivityCompat.requestPermissions(registrar.activity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_CODE);
 			registrar.addRequestPermissionsResultListener(this);
-		} else {
-			result.notImplemented();
 		}
 	}
 
-	private void methodCall() {
+	private void methodCall(MethodCall call, Result result) {
+		switch (call.method) {
+			case "saveImage":
+				saveImageCall();
+				break;
+			case "saveImageToSandbox":
+				saveImageToSandboxCall();
+				break;
+			default:
+				result.notImplemented();
+				break;
+		}
+	}
+
+	private void saveImageCall() {
 		byte[] data = call.argument("imageData");
 		String imageExtension = call.argument("imageExtension");
 		String albumName = call.argument("albumName");
@@ -91,6 +103,38 @@ public class ImageSavePlugin implements MethodCallHandler, PluginRegistry.Reques
 		return false;
 	}
 
+	private void saveImageToSandboxCall() {
+		byte[] data = call.argument("imageData");
+		String imageName = call.argument("imageName");
+		saveImageToSandbox(data, imageName);
+	}
+
+	private void saveImageToSandbox(byte[] data, String imageName) {
+		File files = context.getExternalFilesDir(DIRECTORY_PICTURES);
+		if (files == null) {
+			result.error("-1", "No SD Card found.", "Couldn't obtain external storage.");
+			return;
+		}
+		String filesDirPath = files.getPath();
+
+		File parentDir = new File(filesDirPath);
+		if (!parentDir.exists()) {
+			parentDir.mkdir();
+		}
+		File file = new File(parentDir, imageName);
+		try {
+			FileOutputStream fos = new FileOutputStream(file);
+			fos.write(data);
+			fos.flush();
+			fos.close();
+			context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file.getAbsoluteFile())));
+			result.success(true);
+		} catch (IOException e) {
+			result.error("1", e.getMessage(), e.getCause());
+		}
+	}
+
+
 	private String getApplicationName() {
 		PackageManager packageManager = null;
 		ApplicationInfo applicationInfo = null;
@@ -107,7 +151,7 @@ public class ImageSavePlugin implements MethodCallHandler, PluginRegistry.Reques
 	public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
 		boolean granted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
 		if (granted) {
-			methodCall();
+			methodCall(call, result);
 		} else {
 			result.error("0", "Permission denied", null);
 		}

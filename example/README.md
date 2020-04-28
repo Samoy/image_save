@@ -5,9 +5,14 @@ Demonstrates how to use the image_save plugin.
 ## Usages
 
 ```
-bool success = ImageSave.saveImage(Uint8List.fromList(res.data), "gif", albumName: "demo");
+// Save to album.
+bool success = await ImageSave.saveImage(data, "gif", albumName: "demo");
+
+// Save to sandbox.
+// Notice: Image saved in this way will be deleted when the application is uninstalled.
+bool success = await ImageSave.saveImageToSandbox(data, "demo.gif");
 ```
 
 ## SCREENSHOT
-![screenshot](Screenshot.jpg)
+![screenshot](Screenshot.png)
 

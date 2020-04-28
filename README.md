@@ -22,5 +22,10 @@ Add the following statement in `Info.plist`
 See [Example](https://github.com/Samoy/image_save/tree/master/example)
 
 ```
-bool success = ImageSave.saveImage(Uint8List.fromList(res.data), "gif", albumName: "demo");
+// Save to album.
+bool success = await ImageSave.saveImage(data, "gif", albumName: "demo");
+
+// Save to sandbox.
+// Notice: Image saved in this way will be deleted when the application is uninstalled.
+bool success = await ImageSave.saveImageToSandbox(data, "demo.gif");
 ```

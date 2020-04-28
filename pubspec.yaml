@@ -1,8 +1,6 @@
 name: image_save
-description: You could use this package to save image to album, support Android and iOS.
-  For Android,The path is <code>/{album name}/{image name}</code>.
-  For iOS,The path can't obtain, the image saved to a new album with name you given.
-version: 2.0.0
+description: You could use this package to save image to album or sandbox, support Android and iOS.
+version: 2.1.0
 homepage: https://github.com/Samoy/image_save
 
 environment:

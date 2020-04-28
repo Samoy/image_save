@@ -6,19 +6,29 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'dart:typed_data';
-
-import 'package:flutter_test/flutter_test.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:image_save/image_save.dart';
 
 void main() {
-  test('saveImage', () async {
+  var _data;
+
+  setUp(() async {
     Response<List<int>> res = await Dio().get<List<int>>(
         "http://img.youai123.com/1507615921-5474.gif",
         options: Options(responseType: ResponseType.bytes));
-    expect(
-        await ImageSave.saveImage(Uint8List.fromList(res.data), "gif",
-            albumName: "demo"),
-        isTrue);
+    _data = Uint8List.fromList(res.data);
+  });
+
+  tearDown(() {
+    _data = null;
+  });
+
+  test('saveImage', () async {
+    expect(await ImageSave.saveImage(_data, "gif", albumName: "demo"), isTrue);
+  });
+
+  test('saveImageToSandbox', () async {
+    expect(await ImageSave.saveImageToSandbox(_data, "test.gif"), isTrue);
   });
 }

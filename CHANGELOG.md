@@ -30,3 +30,7 @@
 For Android, The path is <code>/{album name}/{image name}</code>.
 For iOS, The path can't obtain, the image saved to a new album with name you given.
 * Android: migrate to androidx.
+
+## 2.1.0
+* Now you could save image to sandbox by `saveImageToSandBox`.
+* Optimize code.
