@@ -34,3 +34,7 @@ For iOS, The path can't obtain, the image saved to a new album with name you giv
 ## 2.1.0
 * Now you could save image to sandbox by `saveImageToSandBox`.
 * Optimize code.
+
+# 2.1.1
+* Add platform support tags.
+* Upgrade flutter version.

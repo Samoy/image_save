@@ -1,10 +1,11 @@
 name: image_save
 description: You could use this package to save image to album or sandbox, support Android and iOS.
-version: 2.1.0
+version: 2.1.1
 homepage: https://github.com/Samoy/image_save
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
+  flutter: ">=1.10.0 <2.0.0"
 
 dependencies:
   flutter:
@@ -13,7 +14,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  dio: 2.1.0
+  dio: 3.0.9
 
 # For information on the generic Dart part of this file, see the
 # following page: https://www.dartlang.org/tools/pub/pubspec
@@ -25,9 +26,12 @@ flutter:
   # be modified. They are used by the tooling to maintain consistency when
   # adding or updating assets for this project.
   plugin:
-    androidPackage: com.samoy.image_save
-    pluginClass: ImageSavePlugin
-
+    platforms:
+      android:
+        package: com.samoy.image_save
+        pluginClass: ImageSavePlugin
+      ios:
+        pluginClass: ImageSavePlugin
   # To add assets to your plugin package, add an assets section, like this:
   # assets:
   #  - images/a_dot_burr.jpeg
