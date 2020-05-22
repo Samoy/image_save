@@ -1,9 +1,9 @@
 # image_save
 
-![version](https://img.shields.io/pub/v/image_save)
+[![version](https://img.shields.io/pub/v/image_save)](https://pub.dartlang.org/packages/image_save)
 ![platform](https://img.shields.io/badge/platform-Android%7CiOS-green)
-![starts](https://img.shields.io/github/stars/samoy/image_save?style=social)
-<hr>
+[![starts](https://img.shields.io/github/stars/samoy/image_save?style=social)](https://github.com/Samoy/image_save)
+
 Save image to album, support Android and iOS.
 
 ## Permission
