@@ -1,7 +1,9 @@
 # image_save
 
 Save image to album, support Android and iOS.
-
+[https://img.shields.io/pub/v/image_save]
+[https://img.shields.io/github/stars/samoy/image_save?style=social]
+[https://img.shields.io/badge/platform-Android%7CiOS-green]
 ## Permission
 
 * ### Android

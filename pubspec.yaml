@@ -1,6 +1,6 @@
 name: image_save
 description: You could use this package to save image to album or sandbox, support Android and iOS.
-version: 2.1.1
+version: 3.0.0
 homepage: https://github.com/Samoy/image_save
 
 environment:
