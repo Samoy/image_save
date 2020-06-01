@@ -38,3 +38,6 @@ For iOS, The path can't obtain, the image saved to a new album with name you giv
 # 3.0.0
 * Add platform support tags.
 * Upgrade flutter version.
+
+#3.1.0
+* Add `getImagesFromSandbox()` function.
