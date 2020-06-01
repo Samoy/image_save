@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
@@ -45,5 +46,16 @@ class ImageSave {
       rethrow;
     }
     return success;
+  }
+
+  /// Get images from sandbox.
+  static Future<List<Uint8List>> getImagesFromSandbox() async {
+    List<Uint8List> images = [];
+    try {
+      images = await _channel.invokeListMethod("getImagesFromSandbox");
+    } on PlatformException {
+      rethrow;
+    }
+    return images;
   }
 }

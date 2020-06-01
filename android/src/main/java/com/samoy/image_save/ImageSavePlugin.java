@@ -11,9 +11,12 @@ import android.os.Environment;
 import androidx.core.app.ActivityCompat;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -28,133 +31,178 @@ import static android.os.Environment.DIRECTORY_PICTURES;
  * ImageSavePlugin
  */
 public class ImageSavePlugin implements MethodCallHandler, PluginRegistry.RequestPermissionsResultListener {
-	/**
-	 * Plugin registration.
-	 */
-	private Context context;
-	private static final int REQ_CODE = 100;
-	private static Registrar registrar;
-	private MethodCall call;
-	private Result result;
+    /**
+     * Plugin registration.
+     */
+    private Context context;
+    private static final int REQ_CODE = 100;
+    private static Registrar registrar;
+    private MethodCall call;
+    private Result result;
 
-	private ImageSavePlugin(Context context) {
-		this.context = context;
-	}
+    private ImageSavePlugin(Context context) {
+        this.context = context;
+    }
 
-	public static void registerWith(Registrar r) {
-		registrar = r;
-		MethodChannel channel = new MethodChannel(registrar.messenger(), "image_save");
-		channel.setMethodCallHandler(new ImageSavePlugin(r.context()));
-	}
+    public static void registerWith(Registrar r) {
+        registrar = r;
+        MethodChannel channel = new MethodChannel(registrar.messenger(), "image_save");
+        channel.setMethodCallHandler(new ImageSavePlugin(r.context()));
+    }
 
-	@Override
-	public void onMethodCall(final MethodCall call, Result result) {
-		this.call = call;
-		this.result = result;
-		if (ActivityCompat.checkSelfPermission(registrar.activity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-			methodCall(call, result);
-		} else {
-			ActivityCompat.requestPermissions(registrar.activity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_CODE);
-			registrar.addRequestPermissionsResultListener(this);
-		}
-	}
+    @Override
+    public void onMethodCall(final MethodCall call, Result result) {
+        this.call = call;
+        this.result = result;
+        if (ActivityCompat.checkSelfPermission(registrar.activity(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            methodCall(call, result);
+        } else {
+            ActivityCompat.requestPermissions(registrar.activity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_CODE);
+            registrar.addRequestPermissionsResultListener(this);
+        }
+    }
 
-	private void methodCall(MethodCall call, Result result) {
-		switch (call.method) {
-			case "saveImage":
-				saveImageCall();
-				break;
-			case "saveImageToSandbox":
-				saveImageToSandboxCall();
-				break;
-			default:
-				result.notImplemented();
-				break;
-		}
-	}
+    private void methodCall(MethodCall call, Result result) {
+        switch (call.method) {
+            case "saveImage":
+                saveImageCall();
+                break;
+            case "saveImageToSandbox":
+                saveImageToSandboxCall();
+                break;
+            case "getImagesFromSandbox":
+                getImagesFromSandboxCall();
+                break;
+            default:
+                result.notImplemented();
+                break;
+        }
+    }
 
-	private void saveImageCall() {
-		byte[] data = call.argument("imageData");
-		String imageExtension = call.argument("imageExtension");
-		String albumName = call.argument("albumName");
-		result.success(saveImage(data, imageExtension, albumName));
-	}
+    private void saveImageCall() {
+        byte[] data = call.argument("imageData");
+        String imageExtension = call.argument("imageExtension");
+        String albumName = call.argument("albumName");
+        result.success(saveImage(data, imageExtension, albumName));
+    }
 
-	private Boolean saveImage(byte[] data, String imageExtension, String albumName) {
-		String name = "IMAGE_" + new Date().getTime() + "." + imageExtension;
-		if (albumName == null) {
-			albumName = getApplicationName();
-		}
-		String parentPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + albumName;
-		File parentDir = new File(parentPath);
-		if (!parentDir.exists()) {
-			parentDir.mkdir();
-		}
-		File file = new File(parentDir, name);
-		try {
-			FileOutputStream fos = new FileOutputStream(file);
-			fos.write(data);
-			fos.close();
-			context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file.getAbsoluteFile())));
-			return true;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
+    private Boolean saveImage(byte[] data, String imageExtension, String albumName) {
+        String name = "IMAGE_" + new Date().getTime() + "." + imageExtension;
+        if (albumName == null) {
+            albumName = getApplicationName();
+        }
+        String parentPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + albumName;
+        File parentDir = new File(parentPath);
+        if (!parentDir.exists()) {
+            parentDir.mkdir();
+        }
+        File file = new File(parentDir, name);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(data);
+            fos.close();
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file.getAbsoluteFile())));
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
-	private void saveImageToSandboxCall() {
-		byte[] data = call.argument("imageData");
-		String imageName = call.argument("imageName");
-		saveImageToSandbox(data, imageName);
-	}
+    private void saveImageToSandboxCall() {
+        byte[] data = call.argument("imageData");
+        String imageName = call.argument("imageName");
+        saveImageToSandbox(data, imageName);
+    }
 
-	private void saveImageToSandbox(byte[] data, String imageName) {
-		File files = context.getExternalFilesDir(DIRECTORY_PICTURES);
-		if (files == null) {
-			result.error("-1", "No SD Card found.", "Couldn't obtain external storage.");
-			return;
-		}
-		String filesDirPath = files.getPath();
+    private void saveImageToSandbox(byte[] data, String imageName) {
+        File files = context.getExternalFilesDir(DIRECTORY_PICTURES);
+        if (files == null) {
+            result.error("-1", "No SD Card found.", "Couldn't obtain external storage.");
+            return;
+        }
+        String filesDirPath = files.getPath();
 
-		File parentDir = new File(filesDirPath);
-		if (!parentDir.exists()) {
-			parentDir.mkdir();
-		}
-		File file = new File(parentDir, imageName);
-		try {
-			FileOutputStream fos = new FileOutputStream(file);
-			fos.write(data);
-			fos.flush();
-			fos.close();
-			context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file.getAbsoluteFile())));
-			result.success(true);
-		} catch (IOException e) {
-			result.error("1", e.getMessage(), e.getCause());
-		}
-	}
+        File parentDir = new File(filesDirPath);
+        if (!parentDir.exists()) {
+            parentDir.mkdir();
+        }
+        File file = new File(parentDir, imageName);
+        try {
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(data);
+            fos.flush();
+            fos.close();
+            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file.getAbsoluteFile())));
+            result.success(true);
+        } catch (IOException e) {
+            result.error("1", e.getMessage(), e.getCause());
+        }
+    }
+
+    private void getImagesFromSandboxCall() {
+        result.success(getImagesFromSandbox());
+    }
+
+    private List<byte[]> getImagesFromSandbox() {
+        List<byte[]> images = new ArrayList<>();
+        File files = context.getExternalFilesDir(DIRECTORY_PICTURES);
+        if (files != null) {
+            for (File file : files.listFiles()) {
+                try {
+                    images.add(getContent(file.getPath()));
+                } catch (IOException e) {
+                    result.error("2", e.getMessage(), e.getCause());
+                }
+            }
+        }
+        return images;
+    }
+
+    public byte[] getContent(String filePath) throws IOException {
+        File file = new File(filePath);
+        long fileSize = file.length();
+        if (fileSize > Integer.MAX_VALUE) {
+            System.out.println("file too big...");
+            return null;
+        }
+        FileInputStream fi = new FileInputStream(file);
+        byte[] buffer = new byte[(int) fileSize];
+        int offset = 0;
+        int numRead = 0;
+        while (offset < buffer.length
+                && (numRead = fi.read(buffer, offset, buffer.length - offset)) >= 0) {
+            offset += numRead;
+        }
+        if (offset != buffer.length) {
+            throw new IOException("Could not completely read file "
+                    + file.getName());
+        }
+        fi.close();
+        return buffer;
+    }
 
 
-	private String getApplicationName() {
-		PackageManager packageManager = null;
-		ApplicationInfo applicationInfo = null;
-		try {
-			packageManager = context.getPackageManager();
-			applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), 0);
-		} catch (PackageManager.NameNotFoundException e) {
-			e.printStackTrace();
-		}
-		return (String) packageManager.getApplicationLabel(applicationInfo);
-	}
+    private String getApplicationName() {
+        PackageManager packageManager = null;
+        ApplicationInfo applicationInfo = null;
+        try {
+            packageManager = context.getPackageManager();
+            applicationInfo = packageManager.getApplicationInfo(context.getPackageName(), 0);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return (String) packageManager.getApplicationLabel(applicationInfo);
+    }
 
-	@Override
-	public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-		boolean granted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-		if (granted) {
-			methodCall(call, result);
-		} else {
-			result.error("0", "Permission denied", null);
-		}
-		return granted;
-	}
+    @Override
+    public boolean onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        boolean granted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        if (granted) {
+            methodCall(call, result);
+        } else {
+            result.error("0", "Permission denied", null);
+        }
+        return granted;
+    }
 }

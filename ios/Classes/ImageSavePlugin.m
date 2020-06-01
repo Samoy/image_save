@@ -32,9 +32,35 @@
         FlutterStandardTypedData *data = call.arguments[@"imageData"];
         NSString *imageName = call.arguments[@"imageName"];
         [self saveImageToSandBoxWithImageData:data imageName:imageName result:result];
+    }else if([@"getImagesFromSandbox" isEqualToString:call.method]){
+        [self getImagesFromSandboxWithResult:result];
     }else{
-         result(FlutterMethodNotImplemented);
+        result(FlutterMethodNotImplemented);
     }
+}
+
+- (void)getImagesFromSandboxWithResult:(FlutterResult)result{
+    NSString *pictureDir = [[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] stringByAppendingPathComponent:@"Pictures/"];
+    NSArray *pictures = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:pictureDir error:nil];
+    if (pictures.count == 0) {
+        FlutterError *error = [FlutterError errorWithCode:@"2" message:@"File not found" details:nil];
+        result(error);
+        return;
+    }
+    BOOL isDir;
+    BOOL isExist = NO;
+    NSMutableArray<FlutterStandardTypedData*> *imageDatas = [NSMutableArray array];
+    
+    for (NSString *path in pictures) {
+        NSString *fullPath = [NSString stringWithFormat:@"%@/%@", pictureDir, path];
+        isExist = [[NSFileManager defaultManager] fileExistsAtPath:fullPath isDirectory:&isDir];
+        if (isExist&&!isDir) {
+            NSData *data = [NSData dataWithContentsOfFile:fullPath];
+            FlutterStandardTypedData *flutterData = [FlutterStandardTypedData typedDataWithBytes:data];
+            [imageDatas addObject:flutterData];
+        }
+    }
+    result(imageDatas);
 }
 
 - (void)saveImageToSandBoxWithImageData:(FlutterStandardTypedData *)imageData imageName:(NSString*)imageName result:(FlutterResult)result{
@@ -94,7 +120,6 @@
     return nil;
 }
 
-//获取所有相册
 -(PHFetchResult<PHAssetCollection *> *)getAlbumGroup{
     return [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
 }

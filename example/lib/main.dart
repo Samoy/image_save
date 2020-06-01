@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _result = "";
   Uint8List _data;
+  Uint8List _sandboxData;
 
   @override
   void initState() {
@@ -56,6 +58,18 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  Future<void> _getImageFromSandBox() async {
+    try {
+      List<Uint8List> files = await ImageSave.getImagesFromSandbox();
+      setState(() {
+        _sandboxData = files[0];
+      });
+    } catch (e, s) {
+      print(e);
+      print(s);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -63,20 +77,27 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Plugin example app'),
         ),
-        body: Center(
-          child: Column(
-            children: <Widget>[
-              Image.network('http://img.youai123.com/1507615921-5474.gif'),
-              RaisedButton(
-                onPressed: _saveImage,
-                child: Text("Click to save to album"),
-              ),
-              RaisedButton(
-                onPressed: _saveImageToSandBox,
-                child: Text("Click to save to sandbox"),
-              ),
-              Text(_result)
-            ],
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              children: <Widget>[
+                Image.network('http://img.youai123.com/1507615921-5474.gif'),
+                RaisedButton(
+                  onPressed: _saveImage,
+                  child: Text("Click to save to album"),
+                ),
+                RaisedButton(
+                  onPressed: _saveImageToSandBox,
+                  child: Text("Click to save to sandbox"),
+                ),
+                Text(_result),
+                RaisedButton(
+                  onPressed: _getImageFromSandBox,
+                  child: Text("Get first image from sandbox"),
+                ),
+                _sandboxData != null ? Image.memory(_sandboxData) : Text("Please save image to sandbox first"),
+              ],
+            ),
           ),
         ),
       ),
