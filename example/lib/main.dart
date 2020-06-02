@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -95,7 +94,9 @@ class _MyAppState extends State<MyApp> {
                   onPressed: _getImageFromSandBox,
                   child: Text("Get first image from sandbox"),
                 ),
-                _sandboxData != null ? Image.memory(_sandboxData) : Text("Please save image to sandbox first"),
+                _sandboxData != null
+                    ? Image.memory(_sandboxData)
+                    : Text("Please save image to sandbox first"),
               ],
             ),
           ),
