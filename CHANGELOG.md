@@ -39,5 +39,8 @@ For iOS, The path can't obtain, the image saved to a new album with name you giv
 * Add platform support tags.
 * Upgrade flutter version.
 
-#3.1.0
+# 3.1.0
 * Add `getImagesFromSandbox()` function.
+
+# 3.1.1
+* Fix iOS bug for saving image to album with no name.

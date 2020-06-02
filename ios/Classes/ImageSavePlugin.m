@@ -84,7 +84,7 @@
         [assetChangeRequest addResourceWithType:PHAssetResourceTypePhoto data:imageData.data options:nil];
         PHObjectPlaceholder *placeholder = [assetChangeRequest placeholderForCreatedAsset];
         localId = placeholder.localIdentifier;
-        if(albumName != nil){
+        if(![albumName isEqual:[NSNull null]]){
             PHAssetCollectionChangeRequest *collectionRequest;
             PHAssetCollection *assetCollection = [self getCurrentPhotoCollectionWithTitle:albumName];
             if (assetCollection) {
