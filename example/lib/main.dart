@@ -34,7 +34,7 @@ class _MyAppState extends State<MyApp> {
   Future<void> _saveImage() async {
     bool success = false;
     try {
-      success = await ImageSave.saveImage(_data, "gif", albumName: "demo");
+      success = await ImageSave.saveImage(_data, "demo.gif", albumName: "demo");
     } on PlatformException catch (e, s) {
       print(e);
       print(s);
