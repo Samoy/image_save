@@ -1,8 +1,10 @@
 # CHANGELOG
 
-# 3.1.2
-* Update example to support iOS 14.
+## 3.1.3
 * Optimize  *CHANGELOG*
+
+## 3.1.2
+* Update example to support iOS 14.
 
 ## 3.1.1
 * Fix iOS bug for saving image to album with no name.
