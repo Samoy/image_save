@@ -12,16 +12,17 @@
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"saveImage" isEqualToString:call.method]) {
-        NSString *imageExtension = call.arguments[@"imageExtension"];
+        NSString *imageName = call.arguments[@"imageName"];
         NSString *albumName = call.arguments[@"albumName"];
         FlutterStandardTypedData *imageData = call.arguments[@"imageData"];
+        BOOL overwriteFile = call.arguments[@"overwriteSameNameFile"];
         PHAuthorizationStatus authorizationStatus = [PHPhotoLibrary authorizationStatus];
         if (authorizationStatus == PHAuthorizationStatusAuthorized) {
-            [self saveImageWithImageExtension:imageExtension imageData:imageData albumName:albumName result:result];
+            [self saveImageWithImageName:imageName imageData:imageData albumName:albumName overwriteFile:overwriteFile result:result];
         } else if (authorizationStatus == PHAuthorizationStatusNotDetermined) {
             [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
                 if (status == PHAuthorizationStatusAuthorized) {
-                    [self saveImageWithImageExtension:imageExtension imageData:imageData albumName:albumName result:result];
+                    [self saveImageWithImageName:imageName imageData:imageData albumName:albumName overwriteFile:overwriteFile result:result];
                 }
             }];
         } else if(authorizationStatus == PHAuthorizationStatusDenied){
@@ -77,11 +78,14 @@
     result(@(success));
 }
 
--(void)saveImageWithImageExtension:(NSString*) imageExtension imageData:(FlutterStandardTypedData*) imageData albumName:(NSString *)albumName result:(FlutterResult)result{
+-(void)saveImageWithImageName:(NSString*) imageName imageData:(FlutterStandardTypedData*) imageData albumName:(NSString *)albumName overwriteFile:(BOOL)overwriteFile result:(FlutterResult)result{
     __block NSString* localId;
     [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
         PHAssetCreationRequest *assetChangeRequest = [PHAssetCreationRequest creationRequestForAsset];
-        [assetChangeRequest addResourceWithType:PHAssetResourceTypePhoto data:imageData.data options:nil];
+        PHAssetResourceCreationOptions *options = [[PHAssetResourceCreationOptions alloc] init];
+        options.originalFilename = imageName;
+        options.shouldMoveFile = overwriteFile;
+        [assetChangeRequest addResourceWithType:PHAssetResourceTypePhoto data:imageData.data options:options];
         PHObjectPlaceholder *placeholder = [assetChangeRequest placeholderForCreatedAsset];
         localId = placeholder.localIdentifier;
         if(![albumName isEqual:[NSNull null]]){

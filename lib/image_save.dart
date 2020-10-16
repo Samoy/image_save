@@ -12,16 +12,18 @@ class ImageSave {
 
   /// Save Image to album.
   /// [imageData] Image data.
-  /// [imageName] Image name, such as a.jpg, b.gif and so on.
-  /// [albumName] Album name, optional. default application name.
+  /// [imageName] Only works on Android. Image name, such as a.jpg, b.gif and so on.
+  /// [albumName] Album name, optional. For Android, default application name. For iOS, default system album.
+  /// [overwriteSameNameFile] Only works on Android. If <code>true</code>, overwrite the original file that has same name, default <code>true</code>.
   static Future<bool> saveImage(Uint8List imageData, String imageName,
-      {String albumName}) async {
+      {String albumName, overwriteSameNameFile = true}) async {
     bool success = false;
     try {
       success = await _channel.invokeMethod('saveImage', {
         "imageData": imageData,
         "imageName": imageName,
-        "albumName": albumName
+        "albumName": albumName,
+        "overwriteSameNameFile": overwriteSameNameFile
       });
     } on PlatformException {
       rethrow;

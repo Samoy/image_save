@@ -19,7 +19,7 @@ Add the following statement in `AndroidManifest.xml`:
 Add the following statement in `Info.plist`
 ```
 <key>NSPhotoLibraryUsageDescription</key>
-<string>Modify the description of the permission you need here.</string>
+<string>Add the description of the permission you need here.</string>
 ```
 
 ## Usage

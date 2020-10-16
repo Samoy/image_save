@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 4.0.1
+* Breaking changes:
+  1. The method `saveImage` change parameter  `imageExtension` to `imageName`
+  2. The method `saveImage` add parameter `overwriteSameNameFile`
+* Other changes:
+  1. Optimize code.
+
 ## 3.1.3
 * Optimize  *CHANGELOG*
 

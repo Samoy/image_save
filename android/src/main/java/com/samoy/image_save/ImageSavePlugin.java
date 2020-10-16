@@ -7,6 +7,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Environment;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 
@@ -15,7 +16,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import io.flutter.plugin.common.MethodCall;
@@ -83,10 +83,15 @@ public class ImageSavePlugin implements MethodCallHandler, PluginRegistry.Reques
         byte[] data = call.argument("imageData");
         String imageName = call.argument("imageName");
         String albumName = call.argument("albumName");
-        result.success(saveImage(data, imageName, albumName));
+        Boolean overwriteSameNameFile = call.argument("overwriteSameNameFile");
+        try {
+            result.success(saveImage(data, imageName, albumName, overwriteSameNameFile));
+        } catch (IOException e) {
+            result.error("2", e.getMessage(), "The file '" + imageName + "' already exists");
+        }
     }
 
-    private Boolean saveImage(byte[] data, String imageName, String albumName) {
+    private Boolean saveImage(byte[] data, String imageName, String albumName, Boolean overwriteSameNameFile) throws IOException {
         if (albumName == null) {
             albumName = getApplicationName();
         }
@@ -95,6 +100,11 @@ public class ImageSavePlugin implements MethodCallHandler, PluginRegistry.Reques
             parentDir.mkdir();
         }
         File file = new File(parentDir, imageName);
+        if (!overwriteSameNameFile) {
+            if (file.exists()) {
+                throw new IOException("File already exists");
+            }
+        }
         try {
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(data);
