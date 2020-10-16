@@ -27,7 +27,7 @@ See [Example](https://github.com/Samoy/image_save/tree/master/example)
 
 ```
 // Save to album.
-bool success = await ImageSave.saveImage(data, "gif", albumName: "demo");
+bool success = await ImageSave.saveImage(data, "demo.gif", albumName: "demo");
 
 // Save to sandbox.
 // Notice: Image saved in this way will be deleted when the application is uninstalled.

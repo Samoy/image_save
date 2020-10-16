@@ -12,15 +12,15 @@ class ImageSave {
 
   /// Save Image to album.
   /// [imageData] Image data.
-  /// [imageExtension] Image extension, such as jpg,gif and so on.
+  /// [imageName] Image name, such as a.jpg, b.gif and so on.
   /// [albumName] Album name, optional. default application name.
-  static Future<bool> saveImage(Uint8List imageData, String imageExtension,
+  static Future<bool> saveImage(Uint8List imageData, String imageName,
       {String albumName}) async {
     bool success = false;
     try {
       success = await _channel.invokeMethod('saveImage', {
         "imageData": imageData,
-        "imageExtension": imageExtension,
+        "imageName": imageName,
         "albumName": albumName
       });
     } on PlatformException {

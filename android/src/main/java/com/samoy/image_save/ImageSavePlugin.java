@@ -81,22 +81,20 @@ public class ImageSavePlugin implements MethodCallHandler, PluginRegistry.Reques
 
     private void saveImageCall() {
         byte[] data = call.argument("imageData");
-        String imageExtension = call.argument("imageExtension");
+        String imageName = call.argument("imageName");
         String albumName = call.argument("albumName");
-        result.success(saveImage(data, imageExtension, albumName));
+        result.success(saveImage(data, imageName, albumName));
     }
 
-    private Boolean saveImage(byte[] data, String imageExtension, String albumName) {
-        String name = "IMAGE_" + new Date().getTime() + "." + imageExtension;
+    private Boolean saveImage(byte[] data, String imageName, String albumName) {
         if (albumName == null) {
             albumName = getApplicationName();
         }
-        String parentPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + albumName;
-        File parentDir = new File(parentPath);
+        File parentDir = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES), albumName);
         if (!parentDir.exists()) {
             parentDir.mkdir();
         }
-        File file = new File(parentDir, name);
+        File file = new File(parentDir, imageName);
         try {
             FileOutputStream fos = new FileOutputStream(file);
             fos.write(data);
