@@ -95,24 +95,47 @@ public class ImageSavePlugin implements MethodCallHandler, PluginRegistry.Reques
         if (albumName == null) {
             albumName = getApplicationName();
         }
-        File parentDir = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES), albumName);
-        if (!parentDir.exists()) {
-            parentDir.mkdir();
-        }
-        File file = new File(parentDir, imageName);
-        if (!overwriteSameNameFile) {
-            if (file.exists()) {
-                throw new IOException("File already exists");
+        if(Build.VERSION.SDK_INT >= 29){
+            String mimeType = URLConnection.getFileNameMap().getContentTypeFor(imageName);
+            String fileName = imageName;
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.MediaColumns.DISPLAY_NAME,fileName);
+            values.put(MediaStore.MediaColumns.MIME_TYPE, mimeType);
+            values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DCIM);
+            ContentResolver contentResolver = context.getContentResolver();
+            Uri uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            if(uri == null){
+                return false;
+            }
+            try {
+                OutputStream out = contentResolver.openOutputStream(uri);
+                out.write(data);
+                out.close();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        try {
-            FileOutputStream fos = new FileOutputStream(file);
-            fos.write(data);
-            fos.close();
-            context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file.getAbsoluteFile())));
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
+        else{
+            File parentDir = new File(Environment.getExternalStoragePublicDirectory(DIRECTORY_PICTURES), albumName);
+            if (!parentDir.exists()) {
+                parentDir.mkdir();
+            }
+            File file = new File(parentDir, imageName);
+            if (!overwriteSameNameFile) {
+                if (file.exists()) {
+                    throw new IOException("File already exists");
+                }
+            }
+            try {
+                FileOutputStream fos = new FileOutputStream(file);
+                fos.write(data);
+                fos.close();
+                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file.getAbsoluteFile())));
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return false;
     }
