@@ -16,16 +16,19 @@
         NSString *albumName = call.arguments[@"albumName"];
         FlutterStandardTypedData *imageData = call.arguments[@"imageData"];
         BOOL overwriteFile = call.arguments[@"overwriteSameNameFile"];
-        PHAuthorizationStatus authorizationStatus = [PHPhotoLibrary authorizationStatus];
-        if (authorizationStatus == PHAuthorizationStatusAuthorized) {
+        PHAuthorizationStatus authorizationStatus = [PHPhotoLibrary authorizationStatusForAccessLevel:PHAccessLevelReadWrite];
+        if (authorizationStatus == PHAuthorizationStatusAuthorized || authorizationStatus == PHAuthorizationStatusLimited) {
             [self saveImageWithImageName:imageName imageData:imageData albumName:albumName overwriteFile:overwriteFile result:result];
         } else if (authorizationStatus == PHAuthorizationStatusNotDetermined) {
-            [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-                if (status == PHAuthorizationStatusAuthorized) {
+            [PHPhotoLibrary requestAuthorizationForAccessLevel:PHAccessLevelReadWrite handler:^(PHAuthorizationStatus status) {
+                if (status == PHAuthorizationStatusAuthorized || status == PHAuthorizationStatusLimited) {
                     [self saveImageWithImageName:imageName imageData:imageData albumName:albumName overwriteFile:overwriteFile result:result];
+                } else {
+                    FlutterError *error = [FlutterError errorWithCode:@"0" message:@"Permission denied after determining" details:nil];
+                    result(error);
                 }
             }];
-        } else if(authorizationStatus == PHAuthorizationStatusDenied){
+        } else {
             FlutterError *error = [FlutterError errorWithCode:@"0" message:@"Permission denied" details:nil];
             result(error);
         }
