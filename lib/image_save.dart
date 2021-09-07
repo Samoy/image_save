@@ -15,9 +15,9 @@ class ImageSave {
   /// [imageName] Only works on Android. Image name, such as a.jpg, b.gif and so on.
   /// [albumName] Album name, optional. For Android, default application name. For iOS, default system album.
   /// [overwriteSameNameFile] Only works on Android. If <code>true</code>, overwrite the original file that has same name, default <code>true</code>.
-  static Future<bool> saveImage(Uint8List imageData, String imageName,
-      {String albumName, overwriteSameNameFile = true}) async {
-    bool success = false;
+  static Future<bool?> saveImage(Uint8List? imageData, String imageName,
+      {String? albumName, overwriteSameNameFile = true}) async {
+    bool? success = false;
     try {
       success = await _channel.invokeMethod('saveImage', {
         "imageData": imageData,
@@ -37,9 +37,9 @@ class ImageSave {
   /// For iOS, the full path is <code>${NSDocumentDirectory}/Pictures/[imageName]</code>, not support dynamic images.
   /// [imageData] Image data.
   /// [imageName] Image name,contains extension, such as "demo.png".
-  static Future<bool> saveImageToSandbox(
-      Uint8List imageData, String imageName) async {
-    bool success = false;
+  static Future<bool?> saveImageToSandbox(
+      Uint8List? imageData, String imageName) async {
+    bool? success = false;
     try {
       success = await _channel.invokeMethod('saveImageToSandbox',
           {"imageData": imageData, "imageName": imageName});
@@ -50,10 +50,11 @@ class ImageSave {
   }
 
   /// Get images from sandbox.
-  static Future<List<Uint8List>> getImagesFromSandbox() async {
-    List<Uint8List> images = [];
+  static Future<List<Uint8List>?> getImagesFromSandbox() async {
+    List<Uint8List>? images = [];
     try {
-      images = await _channel.invokeListMethod("getImagesFromSandbox");
+      images = (await _channel.invokeListMethod("getImagesFromSandbox"))
+          ?.cast<Uint8List>();
     } on PlatformException {
       rethrow;
     }

@@ -12,7 +12,7 @@ void main() {
     Response<List<int>> res = await Dio().get<List<int>>(
         "http://img.youai123.com/1507615921-5474.gif",
         options: Options(responseType: ResponseType.bytes));
-    _data = Uint8List.fromList(res.data);
+    _data = Uint8List.fromList(res.data!);
   });
 
   tearDown(() {
