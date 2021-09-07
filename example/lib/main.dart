@@ -81,16 +81,16 @@ class _MyAppState extends State<MyApp> {
             child: Column(
               children: <Widget>[
                 Image.network('http://img.youai123.com/1507615921-5474.gif'),
-                RaisedButton(
+                ElevatedButton(
                   onPressed: _saveImage,
                   child: Text("Click to save to album"),
                 ),
-                RaisedButton(
+                ElevatedButton(
                   onPressed: _saveImageToSandBox,
                   child: Text("Click to save to sandbox"),
                 ),
                 Text(_result),
-                RaisedButton(
+                ElevatedButton(
                   onPressed: _getImageFromSandBox,
                   child: Text("Get first image from sandbox"),
                 ),
