@@ -15,19 +15,16 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.Field;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,7 +106,7 @@ public class ImageSavePlugin implements MethodCallHandler, FlutterPlugin, Activi
                 result.error("2", "Duplicate image name", "The file '" + imageName + "' already exists");
             }
             contentValues.put(MediaStore.Images.Media.DISPLAY_NAME, imageName);
-            contentValues.put(MediaStore.Images.Media.MIME_TYPE, "images/*");
+            contentValues.put(MediaStore.Images.Media.MIME_TYPE, URLConnection.getFileNameMap().getContentTypeFor(imageName));
             contentValues.put(MediaStore.Images.Media.RELATIVE_PATH, DIRECTORY_PICTURES + "/" + albumName);
             Uri uri = resolver.insert(contentUri, contentValues);
             if (uri == null) {

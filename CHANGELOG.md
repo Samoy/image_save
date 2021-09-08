@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## 5.0.0
+* Breaking changes:
+  1. Support Android 10
+  2. Migrate to null safety
+  3. For Android, migrate to flutter v1.12
+  4. For Android, remove jcenter repository
+* Bug Fix
+  1. [Issue#12](https://github.com/Samoy/image_save/issues/12)
+  2. [Issue#13](https://github.com/Samoy/image_save/issues/13)
+  3. [Issue#16](https://github.com/Samoy/image_save/issues/16)
+
 ## 4.0.1
 * Breaking changes:
   1. The method `saveImage` change parameter  `imageExtension` to `imageName`

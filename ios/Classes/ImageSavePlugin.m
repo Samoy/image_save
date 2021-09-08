@@ -23,6 +23,9 @@
             [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
                 if (status == PHAuthorizationStatusAuthorized) {
                     [self saveImageWithImageName:imageName imageData:imageData albumName:albumName overwriteFile:overwriteFile result:result];
+                }else{
+                    FlutterError *error = [FlutterError errorWithCode:@"0" message:@"Permission denied" details:nil];
+                    result(error);
                 }
             }];
         } else if(authorizationStatus == PHAuthorizationStatusDenied){
