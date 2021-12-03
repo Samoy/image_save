@@ -40,11 +40,8 @@ import io.flutter.plugin.common.PluginRegistry;
 /**
  * ImageSavePlugin
  */
-public class ImageSavePlugin implements MethodCallHandler, FlutterPlugin, ActivityAware, PluginRegistry.RequestPermissionsResultListener {
+public class ImageSavePlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
     private Context applicationContext;
-    private static final int REQ_CODE = 100;
-    private MethodCall call;
-    private Result result;
     private MethodChannel channel;
     private ActivityPluginBinding activityPluginBinding;
 
@@ -64,30 +61,19 @@ public class ImageSavePlugin implements MethodCallHandler, FlutterPlugin, Activi
 
     @Override
     public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
-        this.call = call;
-        this.result = result;
-        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-            methodCall(call, result);
-        } else {
-            ActivityCompat.requestPermissions(activityPluginBinding.getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQ_CODE);
-            activityPluginBinding.addRequestPermissionsResultListener(this);
-        }
-    }
-
-    private void methodCall(MethodCall call, Result result) {
         byte[] data = call.argument("imageData");
         String imageName = call.argument("imageName");
         String albumName = call.argument("albumName");
         Boolean overwriteSameNameFile = call.argument("overwriteSameNameFile");
         switch (call.method) {
             case "saveImage":
-                saveImageCall(data, imageName, albumName, overwriteSameNameFile);
+                saveImageCall(data, imageName, albumName, overwriteSameNameFile, result);
                 break;
             case "saveImageToSandbox":
-                saveImageToSandboxCall(data, imageName);
+                saveImageToSandboxCall(data, imageName,result);
                 break;
             case "getImagesFromSandbox":
-                getImagesFromSandboxCall();
+                getImagesFromSandboxCall(result);
                 break;
             default:
                 result.notImplemented();
@@ -95,9 +81,8 @@ public class ImageSavePlugin implements MethodCallHandler, FlutterPlugin, Activi
         }
     }
 
-    private void saveImageCall(byte[] data, String imageName, String albumName, Boolean overwrite) {
+    private void saveImageCall(byte[] data, String imageName, String albumName, Boolean overwrite, Result result) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // For Android 10
             ContentResolver resolver = applicationContext.getContentResolver();
             Uri contentUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
             ContentValues contentValues = new ContentValues();
@@ -158,12 +143,11 @@ public class ImageSavePlugin implements MethodCallHandler, FlutterPlugin, Activi
         return false;
     }
 
-
-    private void saveImageToSandboxCall(byte[] data, String imageName) {
-        saveImageToSandbox(data, imageName);
+    private void saveImageToSandboxCall(byte[] data, String imageName, Result result) {
+        saveImageToSandbox(data, imageName, result);
     }
 
-    private void saveImageToSandbox(byte[] data, String imageName) {
+    private void saveImageToSandbox(byte[] data, String imageName, Result result) {
         File files = applicationContext.getExternalFilesDir(DIRECTORY_PICTURES);
         if (files == null) {
             result.error("-1", "No SD Card found.", "Couldn't obtain external storage.");
@@ -188,11 +172,11 @@ public class ImageSavePlugin implements MethodCallHandler, FlutterPlugin, Activi
         }
     }
 
-    private void getImagesFromSandboxCall() {
-        result.success(getImagesFromSandbox());
+    private void getImagesFromSandboxCall(Result result) {
+        result.success(getImagesFromSandbox(result));
     }
 
-    private List<byte[]> getImagesFromSandbox() {
+    private List<byte[]> getImagesFromSandbox(Result result) {
         List<byte[]> images = new ArrayList<>();
         File files = applicationContext.getExternalFilesDir(DIRECTORY_PICTURES);
         if (files != null) {
@@ -235,7 +219,6 @@ public class ImageSavePlugin implements MethodCallHandler, FlutterPlugin, Activi
         return buffer;
     }
 
-
     @Override
     public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
         this.activityPluginBinding = activityPluginBinding;
@@ -254,17 +237,6 @@ public class ImageSavePlugin implements MethodCallHandler, FlutterPlugin, Activi
     @Override
     public void onDetachedFromActivity() {
         this.activityPluginBinding = null;
-    }
-
-    @Override
-    public boolean onRequestPermissionsResult(int i, String[] strings, int[] grantResults) {
-        boolean granted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-        if (granted) {
-            methodCall(call, result);
-        } else {
-            result.error("0", "Permission denied", null);
-        }
-        return granted;
     }
 
     private String getApplicationName() {
